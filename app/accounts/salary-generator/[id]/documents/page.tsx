@@ -9,7 +9,6 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
 import { FileText, Trash2, Upload, Eye, Download, ZoomIn, ZoomOut } from "lucide-react"
-import { fetchApi } from "@/lib/utils"
 import {
   Dialog,
   DialogContent,
@@ -18,54 +17,68 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog"
+import { fetchApi } from "@/lib/utils"
 
 interface Document {
-  type: 'emirates_id' | 'passport' | 'visa' | 'labour_card' | 'contract' | 'health_insurance' | 'employment_insurance' | 'license'
+  type: 'salary_slip' | 'payment_receipt' | 'bank_transfer' | 'other'
   url: string
   uploadDate: string
-  employeeName: string
+  salary_id: string
 }
 
 const documentTypes = [
-  { value: 'emirates_id', label: 'Emirates ID' },
-  { value: 'passport', label: 'Passport' },
-  { value: 'visa', label: 'Visa' },
-  { value: 'labour_card', label: 'Labour Card' },
-  { value: 'contract', label: 'Contract' },
-  { value: 'health_insurance', label: 'Health Insurance' },
-  { value: 'employment_insurance', label: 'Employment Insurance' },
-  { value: 'license', label: 'License' }
+  { value: 'salary_slip', label: 'Salary Slip' },
+  { value: 'payment_receipt', label: 'Payment Receipt' },
+  { value: 'bank_transfer', label: 'Bank Transfer' },
+  { value: 'other', label: 'Other' }
 ]
 
-export default function OutsideDriverDocumentsPage({ params }: { params: { name: string } }) {
+export default function SalaryDocumentsPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const { toast } = useToast()
   const [loading, setLoading] = useState(true)
-  const [documents, setDocuments] = useState<Document[]>([])
+  const [documents, setDocuments] = useState<Document[]>([
+    {
+      type: "salary_slip",
+      url: "https://example.com/documents/salary_slip.pdf",
+      uploadDate: "2024-03-31",
+      salary_id: "SAL001"
+    }
+  ])
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [documentType, setDocumentType] = useState<string>("")
-  const [documentUrl, setDocumentUrl] = useState<string | null>(null)
-  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null)
   const [uploading, setUploading] = useState(false)
   const [viewDialogOpen, setViewDialogOpen] = useState(false)
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [documentToDelete, setDocumentToDelete] = useState<Document | null>(null)
+  const [documentUrl, setDocumentUrl] = useState<string | null>(null)
   const [zoom, setZoom] = useState(100)
   const [contentType, setContentType] = useState<string | null>(null)
 
-  const employeeName = decodeURIComponent(params.name)
+  const salaryId = params.id
 
   useEffect(() => {
     fetchDocuments()
-  }, [employeeName])
+  }, [salaryId])
 
   const fetchDocuments = async () => {
     try {
       setLoading(true)
-      const data = await fetchApi(`/other-employees/${employeeName}/documents`)
-      setDocuments(Array.isArray(data) ? data : [])
+      // In a real implementation, we would fetch documents from the API
+      // For now, we'll just simulate a delay and use mock data
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // Filter documents for this salary record
+      const filteredDocuments = documents.filter(doc => doc.salary_id === salaryId)
+      setDocuments(filteredDocuments)
     } catch (error) {
       console.error('Error fetching documents:', error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch documents",
+      })
     } finally {
       setLoading(false)
     }
@@ -90,37 +103,26 @@ export default function OutsideDriverDocumentsPage({ params }: { params: { name:
     setUploading(true)
 
     try {
-      // Check if a document of this type already exists
-      const existingDoc = documents.find(doc => doc.type === documentType)
-      if (existingDoc) {
-        await fetchApi(`/other-employees/${employeeName}/documents/${documentType}`, {
-          method: 'DELETE',
-        })
+      // In a real implementation, we would upload the file to the server
+      // For now, we'll just simulate a delay and add a mock document
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      const newDocument: Document = {
+        type: documentType as any,
+        url: URL.createObjectURL(selectedFile),
+        uploadDate: new Date().toISOString().split('T')[0],
+        salary_id: salaryId
       }
-
-      const formData = new FormData()
-      formData.append('file', selectedFile)
-      formData.append('type', documentType)
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/other-employees/${employeeName}/documents/${documentType}/upload`, {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to upload document')
-      }
-
+      
+      setDocuments([...documents, newDocument])
+      
       toast({
         title: "Success",
-        description: existingDoc 
-          ? "Document updated successfully" 
-          : "Document uploaded successfully",
+        description: "Document uploaded successfully",
       })
-
+      
       setSelectedFile(null)
       setDocumentType("")
-      fetchDocuments()
     } catch (error) {
       console.error('Error uploading document:', error)
       toast({
@@ -137,16 +139,17 @@ export default function OutsideDriverDocumentsPage({ params }: { params: { name:
     if (!documentToDelete) return
 
     try {
-      await fetchApi(`/other-employees/${employeeName}/documents/${documentToDelete.type}`, {
-        method: 'DELETE',
-      })
-
+      // In a real implementation, we would delete the document from the server
+      // For now, we'll just simulate a delay and remove it from our state
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      setDocuments(documents.filter(doc => doc !== documentToDelete))
+      
       toast({
         title: "Success",
         description: "Document deleted successfully",
       })
-
-      setDocuments(documents.filter(doc => doc.type !== documentToDelete.type))
+      
       setDeleteDialogOpen(false)
       setDocumentToDelete(null)
     } catch (error) {
@@ -164,21 +167,17 @@ export default function OutsideDriverDocumentsPage({ params }: { params: { name:
       setSelectedDocument(document)
       setViewDialogOpen(true)
       setZoom(100) // Reset zoom when opening new document
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/other-employees/${employeeName}/documents/${document.type}`)
-      if (!response.ok) throw new Error('Failed to fetch document')
-
-      const contentType = response.headers.get('Content-Type')
-      setContentType(contentType)
       
-      const blob = await response.blob()
-      const url = URL.createObjectURL(blob)
-      setDocumentUrl(url)
+      // In a real implementation, we would fetch the document from the server
+      // For now, we'll just use the URL directly
+      setDocumentUrl(document.url)
+      setContentType("application/pdf") // Assuming PDF for mock data
     } catch (error) {
       console.error('Error viewing document:', error)
       toast({
         variant: "destructive",
         title: "Error",
-        description: `File missing at server/invalid path`,
+        description: "Failed to view document",
       })
       setViewDialogOpen(false)
     }
@@ -188,7 +187,7 @@ export default function OutsideDriverDocumentsPage({ params }: { params: { name:
     if (documentUrl && selectedDocument) {
       const a = document.createElement('a')
       a.href = documentUrl
-      a.download = selectedDocument.url
+      a.download = `${selectedDocument.type}_${selectedDocument.salary_id}.pdf`
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
@@ -211,7 +210,7 @@ export default function OutsideDriverDocumentsPage({ params }: { params: { name:
       }
     }
   }, [documentUrl])
-  
+
   if (loading) {
     return (
       <div className="p-8 flex items-center justify-center">
@@ -244,12 +243,12 @@ export default function OutsideDriverDocumentsPage({ params }: { params: { name:
 
     return <div className="text-center p-4">Unsupported document type</div>
   }
-  
+
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle>Outside Driver Documents - {employeeName}</CardTitle>
+          <CardTitle>Salary Documents - ID: {salaryId}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-8">
@@ -298,8 +297,8 @@ export default function OutsideDriverDocumentsPage({ params }: { params: { name:
                 <p className="text-muted-foreground">No documents uploaded yet.</p>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {documents.map((doc) => (
-                    <Card key={doc.type}>
+                  {documents.map((doc, index) => (
+                    <Card key={index}>
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">

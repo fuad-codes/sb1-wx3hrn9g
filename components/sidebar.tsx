@@ -21,7 +21,8 @@ import {
   Store,
   Globe,
   AlertTriangle,
-  Container
+  Container,
+  PieChart
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -87,6 +88,11 @@ const routes = [
     label: 'Inventory',
     icon: Boxes,
     href: '/inventory',
+  },
+  {
+    label: 'Reports',
+    icon: PieChart,
+    href: '/reports',
   },
   {
     label: 'Settings',

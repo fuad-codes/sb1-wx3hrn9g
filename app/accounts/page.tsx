@@ -11,6 +11,8 @@ import { Expenses } from "./expenses"
 import { ProfitMaster } from "./profit-master"
 import { InvestorShare } from "./investor-share"
 import { TIRSold } from "./tir-sold"
+import { SalaryGenerator } from "./salary-generator"
+import { Miscellaneous } from "./miscellaneous"
 
 export default function AccountsPage() {
   const [selectedTab, setSelectedTab] = useState("income")
@@ -34,12 +36,14 @@ export default function AccountsPage() {
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-        <TabsList>
+        <TabsList className="grid grid-cols-4 md:grid-cols-7">
           <TabsTrigger value="income">Income</TabsTrigger>
           <TabsTrigger value="expenses">Expenses</TabsTrigger>
           <TabsTrigger value="profit-master">Profit Master</TabsTrigger>
           <TabsTrigger value="investor-share">Investor Share</TabsTrigger>
           <TabsTrigger value="tir-sold">TIR Sold</TabsTrigger>
+          <TabsTrigger value="salary-generator">Salary Generator</TabsTrigger>
+          <TabsTrigger value="miscellaneous">Miscellaneous</TabsTrigger>
         </TabsList>
 
         <TabsContent value="income">
@@ -60,6 +64,14 @@ export default function AccountsPage() {
 
         <TabsContent value="tir-sold">
           <TIRSold />
+        </TabsContent>
+
+        <TabsContent value="salary-generator">
+          <SalaryGenerator />
+        </TabsContent>
+
+        <TabsContent value="miscellaneous">
+          <Miscellaneous />
         </TabsContent>
       </Tabs>
     </div>

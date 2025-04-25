@@ -8,35 +8,36 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 
 const recentTrips = [
   {
-    id: "TR-1234",
+    id: "TR-156",
     driver: "John Doe",
-    destination: "New York, NY",
-    status: "In Progress",
-    amount: "$1,200",
-  },
-  {
-    id: "TR-1235",
-    driver: "Jane Smith",
-    destination: "Los Angeles, CA",
+    destination: "Muscat, Oman",
     status: "Completed",
-    amount: "$1,800",
+    amount: "د.إ 2,500",
   },
   {
-    id: "TR-1236",
+    id: "TR-155",
     driver: "Mike Johnson",
-    destination: "Chicago, IL",
-    status: "Scheduled",
-    amount: "$950",
+    destination: "Riyadh, Saudi Arabia",
+    status: "In Progress",
+    amount: "د.إ 3,200",
   },
   {
-    id: "TR-1237",
+    id: "TR-154",
     driver: "Sarah Wilson",
-    destination: "Miami, FL",
-    status: "In Progress",
-    amount: "$1,500",
+    destination: "Doha, Qatar",
+    status: "Completed",
+    amount: "د.إ 2,800",
+  },
+  {
+    id: "TR-153",
+    driver: "Ahmed Hassan",
+    destination: "Kuwait City, Kuwait",
+    status: "Completed",
+    amount: "د.إ 3,000",
   },
 ]
 
@@ -58,7 +59,11 @@ export function RecentTrips() {
             <TableCell className="font-medium">{trip.id}</TableCell>
             <TableCell>{trip.driver}</TableCell>
             <TableCell>{trip.destination}</TableCell>
-            <TableCell>{trip.status}</TableCell>
+            <TableCell>
+              <Badge variant={trip.status === "Completed" ? "default" : "secondary"}>
+                {trip.status}
+              </Badge>
+            </TableCell>
             <TableCell className="text-right">{trip.amount}</TableCell>
           </TableRow>
         ))}

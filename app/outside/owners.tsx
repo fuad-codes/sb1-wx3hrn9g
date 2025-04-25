@@ -22,8 +22,17 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog"
-import type { OutsideOwner } from "../api/interfaces"
+import { Textarea } from "@/components/ui/textarea"
 import { fetchApi } from "@/lib/utils"
+
+interface OutsideOwner {
+  name: string
+  contact_person: string | null
+  phone_number: string | null
+  whatsapp_number: string | null
+  address: string | null
+  remarks: string | null
+}
 
 export function Owners() {
   const [owners, setOwners] = useState<OutsideOwner[]>([])
@@ -194,13 +203,21 @@ export function Owners() {
                   <p className="text-sm font-medium text-gray-500">WhatsApp Number</p>
                   <p className="mt-1">{selectedOwner.whatsapp_number || 'N/A'}</p>
                 </div>
-                <div>
+                <div className="col-span-2">
                   <p className="text-sm font-medium text-gray-500">Address</p>
-                  <p className="mt-1">{selectedOwner.address || 'N/A'}</p>
+                  <Textarea
+                    value={selectedOwner.address || 'N/A'}
+                    className="mt-1"
+                    readOnly
+                  />
                 </div>
-                <div>
+                <div className="col-span-2">
                   <p className="text-sm font-medium text-gray-500">Remarks</p>
-                  <p className="mt-1">{selectedOwner.remarks || 'N/A'}</p>
+                  <Textarea
+                    value={selectedOwner.remarks || 'N/A'}
+                    className="mt-1"
+                    readOnly
+                  />
                 </div>
               </div>
             </div>

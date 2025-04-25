@@ -20,24 +20,25 @@ import {
 } from "@/components/ui/dialog"
 
 interface Document {
-  type: 'emirates_id' | 'passport' | 'visa' | 'labour_card' | 'contract' | 'health_insurance' | 'employment_insurance' | 'license'
+  type: 'mulkiya' | 'insurance' | 'other' | 'oman' | 'kuwait' | 'saudi' | 'qatar' | 'bahrin' | 'jordan'
   url: string
   uploadDate: string
-  employeeName: string
+  trailer_no: string
 }
 
 const documentTypes = [
-  { value: 'emirates_id', label: 'Emirates ID' },
-  { value: 'passport', label: 'Passport' },
-  { value: 'visa', label: 'Visa' },
-  { value: 'labour_card', label: 'Labour Card' },
-  { value: 'contract', label: 'Contract' },
-  { value: 'health_insurance', label: 'Health Insurance' },
-  { value: 'employment_insurance', label: 'Employment Insurance' },
-  { value: 'license', label: 'License' }
+  { value: 'mulkiya', label: 'Mulkiya' },
+  { value: 'insurance', label: 'Insurance' },
+  { value: 'other', label: 'Other' },
+  { value: 'oman', label: 'Oman' },
+  { value: 'kuwait', label: 'Kuwait' },
+  { value: 'saudi', label: 'Saudi' },
+  { value: 'qatar', label: 'Qatar' },
+  { value: 'bahrin', label: 'Bahrin' },
+  { value: 'jordan', label: 'Jordan' }
 ]
 
-export default function OutsideDriverDocumentsPage({ params }: { params: { name: string } }) {
+export default function OutsideTrailerDocumentsPage({ params }: { params: { trailer_no: string } }) {
   const router = useRouter()
   const { toast } = useToast()
   const [loading, setLoading] = useState(true)
@@ -53,16 +54,16 @@ export default function OutsideDriverDocumentsPage({ params }: { params: { name:
   const [zoom, setZoom] = useState(100)
   const [contentType, setContentType] = useState<string | null>(null)
 
-  const employeeName = decodeURIComponent(params.name)
+  const trailerNo = decodeURIComponent(params.trailer_no)
 
   useEffect(() => {
     fetchDocuments()
-  }, [employeeName])
+  }, [trailerNo])
 
   const fetchDocuments = async () => {
     try {
       setLoading(true)
-      const data = await fetchApi(`/other-employees/${employeeName}/documents`)
+      const data = await fetchApi(`/other-trailers/${trailerNo}/documents`)
       setDocuments(Array.isArray(data) ? data : [])
     } catch (error) {
       console.error('Error fetching documents:', error)
@@ -93,7 +94,7 @@ export default function OutsideDriverDocumentsPage({ params }: { params: { name:
       // Check if a document of this type already exists
       const existingDoc = documents.find(doc => doc.type === documentType)
       if (existingDoc) {
-        await fetchApi(`/other-employees/${employeeName}/documents/${documentType}`, {
+        await fetchApi(`/other-trailers/${trailerNo}/documents/${documentType}`, {
           method: 'DELETE',
         })
       }
@@ -102,7 +103,7 @@ export default function OutsideDriverDocumentsPage({ params }: { params: { name:
       formData.append('file', selectedFile)
       formData.append('type', documentType)
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/other-employees/${employeeName}/documents/${documentType}/upload`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/other-trailers/${trailerNo}/documents/${documentType}/upload`, {
         method: 'POST',
         body: formData,
       })
@@ -137,7 +138,7 @@ export default function OutsideDriverDocumentsPage({ params }: { params: { name:
     if (!documentToDelete) return
 
     try {
-      await fetchApi(`/other-employees/${employeeName}/documents/${documentToDelete.type}`, {
+      await fetchApi(`/other-trailers/${trailerNo}/documents/${documentToDelete.type}`, {
         method: 'DELETE',
       })
 
@@ -164,7 +165,7 @@ export default function OutsideDriverDocumentsPage({ params }: { params: { name:
       setSelectedDocument(document)
       setViewDialogOpen(true)
       setZoom(100) // Reset zoom when opening new document
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/other-employees/${employeeName}/documents/${document.type}`)
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/other-trailers/${trailerNo}/documents/${document.type}`)
       if (!response.ok) throw new Error('Failed to fetch document')
 
       const contentType = response.headers.get('Content-Type')
@@ -249,7 +250,7 @@ export default function OutsideDriverDocumentsPage({ params }: { params: { name:
     <div className="p-8 max-w-4xl mx-auto">
       <Card>
         <CardHeader>
-          <CardTitle>Outside Driver Documents - {employeeName}</CardTitle>
+          <CardTitle>Outside Trailer Documents - {trailerNo}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-8">

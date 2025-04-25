@@ -47,6 +47,8 @@ export interface FineRecord extends BaseRecord {
   fine_type: string
   due_date: string
   penalty_amount: number
+  driver_fault: boolean
+  reason: string
 }
 
 export interface InsuranceRecord extends BaseRecord {
@@ -179,8 +181,8 @@ export interface Employee {
 export interface OutsideOwner {
   name: string
   contact_person: string | null
-  phone_number: number | null
-  whatsapp_number: number | null
+  phone_number: string | null
+  whatsapp_number: string | null
   address: string | null
   remarks: string | null
 }

@@ -30,9 +30,9 @@ export default function AddOwnerPage() {
     try {
       const formattedData = {
         ...formData,
-        phone_number: formData.phone_number ? Number(formData.phone_number) : null,
-        whatsapp_number: formData.whatsapp_number ? Number(formData.whatsapp_number) : null,
         contact_person: formData.contact_person || null,
+        phone_number: formData.phone_number || null,
+        whatsapp_number: formData.whatsapp_number || null,
         address: formData.address || null,
         remarks: formData.remarks || null
       }
@@ -96,7 +96,6 @@ export default function AddOwnerPage() {
               <Label htmlFor="phone_number">Phone Number</Label>
               <Input
                 id="phone_number"
-                type="number"
                 value={formData.phone_number}
                 onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
               />
@@ -106,7 +105,6 @@ export default function AddOwnerPage() {
               <Label htmlFor="whatsapp_number">WhatsApp Number</Label>
               <Input
                 id="whatsapp_number"
-                type="number"
                 value={formData.whatsapp_number}
                 onChange={(e) => setFormData({ ...formData, whatsapp_number: e.target.value })}
               />
@@ -114,10 +112,11 @@ export default function AddOwnerPage() {
 
             <div className="space-y-2">
               <Label htmlFor="address">Address</Label>
-              <Input
+              <Textarea
                 id="address"
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                rows={3}
               />
             </div>
 

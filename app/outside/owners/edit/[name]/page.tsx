@@ -9,7 +9,15 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { fetchApi } from "@/lib/utils"
-import type { OutsideOwner } from "@/app/api/interfaces"
+
+interface OutsideOwner {
+  name: string
+  contact_person: string | null
+  phone_number: string | null
+  whatsapp_number: string | null
+  address: string | null
+  remarks: string | null
+}
 
 export default function EditOwnerPage({ params }: { params: { name: string } }) {
   const router = useRouter()
@@ -45,22 +53,13 @@ export default function EditOwnerPage({ params }: { params: { name: string } }) 
     try {
       if (!owner) return
 
-      const formattedData = {
-        ...owner,
-        phone_number: owner.phone_number ? Number(owner.phone_number) : null,
-        whatsapp_number: owner.whatsapp_number ? Number(owner.whatsapp_number) : null,
-        contact_person: owner.contact_person || null,
-        address: owner.address || null,
-        remarks: owner.remarks || null
-      }
-
       const decodedName = decodeURIComponent(params.name)
       await fetchApi(`/other-owners/${decodedName}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formattedData),
+        body: JSON.stringify(owner),
       })
 
       toast({
@@ -125,7 +124,6 @@ export default function EditOwnerPage({ params }: { params: { name: string } }) 
               <Label htmlFor="phone_number">Phone Number</Label>
               <Input
                 id="phone_number"
-                type="number"
                 value={owner.phone_number || ""}
                 onChange={(e) => setOwner({ ...owner, phone_number: e.target.value })}
               />
@@ -135,7 +133,6 @@ export default function EditOwnerPage({ params }: { params: { name: string } }) 
               <Label htmlFor="whatsapp_number">WhatsApp Number</Label>
               <Input
                 id="whatsapp_number"
-                type="number"
                 value={owner.whatsapp_number || ""}
                 onChange={(e) => setOwner({ ...owner, whatsapp_number: e.target.value })}
               />
@@ -143,10 +140,11 @@ export default function EditOwnerPage({ params }: { params: { name: string } }) 
 
             <div className="space-y-2">
               <Label htmlFor="address">Address</Label>
-              <Input
+              <Textarea
                 id="address"
                 value={owner.address || ""}
                 onChange={(e) => setOwner({ ...owner, address: e.target.value })}
+                rows={3}
               />
             </div>
 
